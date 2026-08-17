@@ -196,6 +196,8 @@
   .contact-card .label{text-transform:uppercase;letter-spacing:0.1em;font-size:0.72rem;color:#9aa08d;margin-bottom:12px;}
   .contact-card a{font-family:var(--serif);font-size:1.3rem;text-decoration:none;font-weight:600;}
   .contact-card a:hover{color:#c9d3bd;}
+  .contact-card a.btn{font-family:var(--sans);font-size:0.78rem;letter-spacing:0.06em;}
+  .contact-card a.btn:hover{color:var(--ink);}
   @media (max-width:760px){ .contact-grid{grid-template-columns:1fr;} }
 
   footer{
@@ -203,6 +205,40 @@
     border-top:1px solid var(--line);
   }
   footer a{text-decoration:none;border-bottom:1px solid var(--line);}
+
+  /* LIGHTBOX */
+  .gallery a{cursor:zoom-in;}
+  .lightbox{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(10,10,9,0.95);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .lightbox.open{opacity:1;visibility:visible;pointer-events:auto;}
+  .lightbox img{max-width:88vw;max-height:82vh;object-fit:contain;border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .lightbox-close{
+    position:absolute;top:18px;right:20px;background:none;border:0;color:#fff;
+    font-size:2.2rem;line-height:1;cursor:pointer;padding:8px;font-family:var(--sans);
+  }
+  .lightbox-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.3);color:#fff;
+    width:52px;height:52px;border-radius:50%;font-size:1.6rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:background .15s ease;
+  }
+  .lightbox-nav:hover{background:rgba(255,255,255,0.2);}
+  .lightbox-prev{left:16px;}
+  .lightbox-next{right:16px;}
+  .lightbox-counter{
+    position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+    color:rgba(255,255,255,0.75);font-size:0.8rem;letter-spacing:0.08em;
+  }
+  @media (max-width:640px){
+    .lightbox-nav{width:42px;height:42px;font-size:1.3rem;}
+    .lightbox-prev{left:6px;} .lightbox-next{right:6px;}
+    .lightbox-close{top:10px;right:12px;}
+  }
 </style>
 </head>
 <body>
@@ -371,7 +407,8 @@
       </div>
       <div class="contact-card">
         <div class="label">Address</div>
-        <a href="https://maps.google.com/?q=1375+N+Wygant+St,+Portland,+OR+97217" target="_blank" rel="noopener">1375 N Wygant St, Portland, OR</a>
+        <div style="font-family:var(--serif);font-size:1.3rem;font-weight:600;">1375 N Wygant St, Portland, OR</div>
+        <a href="https://maps.google.com/?q=1375+N+Wygant+St,+Portland,+OR+97217" target="_blank" rel="noopener" class="btn btn-outline-light btn-sm" style="margin-top:16px;">View on Google Maps</a>
       </div>
     </div>
   </div>
@@ -381,8 +418,62 @@
   &copy; <span id="year"></span> Wygant Flats · 1375 N Wygant St, Portland, OR 97217 · Managed by <a href="mailto:rent@edgemgt.com">Edge Property Management</a>
 </footer>
 
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#8249;</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next image">&#8250;</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  (function(){
+    const links = Array.from(document.querySelectorAll('.gallery a'));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const counter = document.getElementById('lightboxCounter');
+    let index = 0;
+
+    function show(i){
+      index = (i + links.length) % links.length;
+      const link = links[index];
+      lightboxImg.src = link.getAttribute('href');
+      lightboxImg.alt = link.querySelector('img').alt;
+      counter.textContent = (index + 1) + ' / ' + links.length;
+    }
+    function open(i){
+      show(i);
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function close(){
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    links.forEach((link, i) => {
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        open(i);
+      });
+    });
+    document.getElementById('lightboxClose').addEventListener('click', close);
+    document.getElementById('lightboxPrev').addEventListener('click', () => show(index - 1));
+    document.getElementById('lightboxNext').addEventListener('click', () => show(index + 1));
+    lightbox.addEventListener('click', function(e){
+      if (e.target === lightbox) close();
+    });
+    document.addEventListener('keydown', function(e){
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+  })();
 </script>
 
 </body>
