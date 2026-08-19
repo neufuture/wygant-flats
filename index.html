@@ -181,6 +181,12 @@
   }
   .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
 
+  /* AVAILABILITY WIDGET */
+  .widget-frame{
+    background:var(--paper);border:1px solid var(--line);border-radius:2px;
+    overflow:hidden;padding:4px;
+  }
+
   /* CTA / CONTACT */
   .cta-section{
     background:var(--ink);color:#fff;text-align:center;
@@ -353,6 +359,29 @@
     </div>
     <div style="margin-top:36px;">
       <a href="https://www.edgemgt.com/availability?search=wygant" target="_blank" rel="noopener" class="btn btn-primary">See Current Availability</a>
+    </div>
+  </div>
+</section>
+
+<section class="gallery-section" id="availability">
+  <div class="wrap">
+    <div class="kicker">Availability</div>
+    <h2>Current openings</h2>
+    <p class="lead" style="margin-bottom:36px;">Live listings, updated directly from our property management system.</p>
+    <div class="widget-frame">
+      <script type='text/javascript' charset='utf-8'>
+        document.write(unescape("%3Cscript src='" + (('https:' == document.location.protocol) ? 'https:' : 'http:') + "//edgemgt.appfolio.com/javascripts/listing.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type='text/javascript' charset='utf-8'>
+        Appfolio.Listing({
+          hostUrl: 'edgemgt.appfolio.com',
+          //propertyGroup: 'Wygant',
+          themeColor: '#676767',
+          height: '500px',
+          width: '100%',
+          defaultOrder: 'date_posted'
+        });
+      </script>
     </div>
   </div>
 </section>
